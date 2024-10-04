@@ -4,33 +4,32 @@ import { AuthToken, Status } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-
-const PAGE_SIZE = 10;
+import {
+  StatusItemPresenter,
+  StatusItemView,
+} from "../../presenters/Status/StatusItemPresenter";
 
 interface Props {
-    loadItems: (
-        authtoken: AuthToken,
-        userAlias: string,
-        pageSize: number,
-        lastItem: Status | null
-    ) => Promise<[Status[], boolean]>;
-  itemDescription: string;
+  presenterGenerator: (view: StatusItemView) => StatusItemPresenter;
 }
 
-const StatusItemScroller = ({loadItems, itemDescription}: Props) => {
-
-    const { displayErrorMessage } = useToastListener();
+const StatusItemScroller = (props: Props) => {
+  const { displayErrorMessage } = useToastListener();
   const [items, setItems] = useState<Status[]>([]);
   const [newItems, setNewItems] = useState<Status[]>([]);
   const [hasMoreItems, setHasMoreItems] = useState(true);
   const [lastItem, setLastItem] = useState<Status | null>(null);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-  const addItems = (newItems: Status[]) =>
-    setNewItems(newItems);
-  
   const { displayedUser, setDisplayedUser, currentUser, authToken } =
     useUserInfo();
+
+  const listener: StatusItemView = {
+    addItems: (newItems) => setNewItems(newItems),
+    displayErrorMessage: displayErrorMessage,
+  };
+
+  const [presenter] = useState(props.presenterGenerator(listener));
 
   // Initialize the component whenever the displayed user changes
   useEffect(() => {
@@ -39,17 +38,17 @@ const StatusItemScroller = ({loadItems, itemDescription}: Props) => {
 
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
-    if(changedDisplayedUser) {
-      loadMoreItems();
+    if (changedDisplayedUser) {
+      presenter.loadMoreItems(authToken!, displayedUser!.alias);
     }
   }, [changedDisplayedUser]);
 
   // Add new items whenever there are new items to add
   useEffect(() => {
-    if(newItems) {
+    if (newItems) {
       setItems([...items, ...newItems]);
     }
-  }, [newItems])
+  }, [newItems]);
 
   const reset = async () => {
     setItems([]);
@@ -57,30 +56,14 @@ const StatusItemScroller = ({loadItems, itemDescription}: Props) => {
     setLastItem(null);
     setHasMoreItems(true);
     setChangedDisplayedUser(true);
-  }
-
-
-    const loadMoreItems = async () => {
-    try {
-      const [newItems, hasMore] = await loadItems(
-        authToken!,
-        displayedUser!.alias,
-        PAGE_SIZE,
-        lastItem
-      );
-
-      setHasMoreItems(hasMore);
-      setLastItem(newItems[newItems.length - 1]);
-      addItems(newItems);
-      setChangedDisplayedUser(false)
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to load ${itemDescription} items because of exception: ${error}`
-      );
-    }
   };
 
-    return (
+  const loadMoreItems = async () => {
+    presenter.loadMoreItems(authToken!, displayedUser!.alias);
+    setChangedDisplayedUser(false);
+  };
+
+  return (
     <div className="container px-0 overflow-visible vh-100">
       <InfiniteScroll
         className="pr-0 mr-0"
@@ -94,7 +77,7 @@ const StatusItemScroller = ({loadItems, itemDescription}: Props) => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-          <StatusItem status={item}></StatusItem>
+            <StatusItem status={item}></StatusItem>
           </div>
         ))}
       </InfiniteScroll>
@@ -103,4 +86,3 @@ const StatusItemScroller = ({loadItems, itemDescription}: Props) => {
 };
 
 export default StatusItemScroller;
-
