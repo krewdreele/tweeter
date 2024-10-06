@@ -20,4 +20,12 @@ export class UserService {
     // TODO: Replace with the result of calling server
     return FakeData.instance.getPageOfUsers(lastItem, pageSize, userAlias);
   }
+
+  public async getUser(
+    authToken: AuthToken,
+    alias: string
+  ): Promise<User | null> {
+    // TODO: Replace with the result of calling server
+    return FakeData.instance.findUserByAlias(alias);
+  }
 }

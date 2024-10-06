@@ -7,7 +7,7 @@ interface Props {
 }
 
 const Post = (props: Props) => {
-  const {navigateToUser} = useNavigateToUserListener();
+  const { navigateToUser } = useNavigateToUserListener();
 
   return (
     <>

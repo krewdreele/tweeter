@@ -36,7 +36,7 @@ const StatusItemScroller = (props: Props) => {
   // Load initial items whenever the displayed user changes. Done in a separate useEffect hook so the changes from reset will be visible.
   useEffect(() => {
     if (changedDisplayedUser) {
-      presenter.loadMoreItems(authToken!, displayedUser!.alias);
+      loadMoreItems();
     }
   }, [changedDisplayedUser]);
 
