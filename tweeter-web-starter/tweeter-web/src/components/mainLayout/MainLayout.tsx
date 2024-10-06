@@ -7,6 +7,10 @@ import {
   LogoutPresenter,
   LogoutView,
 } from "../../presenters/Authentication/LogoutPresenter";
+import {
+  PostStatusPresenter,
+  PostStatusView,
+} from "../../presenters/Status/PostStatusPresenter";
 
 const MainLayout = () => {
   return (
@@ -24,7 +28,11 @@ const MainLayout = () => {
                 <UserInfo />
               </div>
               <div className="p-3 border mt-1 rounded bg-light">
-                <PostStatus />
+                <PostStatus
+                  presenterGenerator={(listener: PostStatusView) =>
+                    new PostStatusPresenter(listener)
+                  }
+                />
               </div>
             </div>
           </div>
