@@ -23,6 +23,10 @@ import {
   LoginView,
   LoginPresenter,
 } from "./presenters/Authentication/LoginPresenter";
+import {
+  RegisterView,
+  RegisterPresenter,
+} from "./presenters/Authentication/RegisterPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -112,7 +116,16 @@ const UnauthenticatedRoutes = () => {
           />
         }
       />
-      <Route path="/register" element={<Register />} />
+      <Route
+        path="/register"
+        element={
+          <Register
+            presenterGenerator={(listener: RegisterView) =>
+              new RegisterPresenter(listener)
+            }
+          />
+        }
+      />
       <Route
         path="*"
         element={
