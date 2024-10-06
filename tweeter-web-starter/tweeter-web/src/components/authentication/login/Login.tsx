@@ -7,8 +7,13 @@ import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationField from "../AuthenticationField";
 import useUserInfo from "../../userInfo/UserInfoHook";
+import {
+  LoginView,
+  LoginPresenter,
+} from "../../../presenters/Authentication/LoginPresenter";
 
 interface Props {
+  presenterGenerator: (listener: LoginView) => LoginPresenter;
   originalUrl?: string;
 }
 
@@ -28,49 +33,30 @@ const Login = (props: Props) => {
 
   const loginOnEnter = (event: React.KeyboardEvent<HTMLElement>) => {
     if (event.key == "Enter" && !checkSubmitButtonStatus()) {
-      doLogin();
+      login();
     }
   };
 
-  const doLogin = async () => {
-    try {
-      setIsLoading(true);
-
-      const [user, authToken] = await login(alias, password);
-
-      updateUserInfo(user, user, authToken, rememberMe);
-
-      if (!!props.originalUrl) {
-        navigate(props.originalUrl);
-      } else {
-        navigate("/");
-      }
-    } catch (error) {
-      displayErrorMessage(
-        `Failed to log user in because of exception: ${error}`
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const listener: LoginView = {
+    setIsLoading: setIsLoading,
+    updateUserInfo: updateUserInfo,
+    displayErrorMessage: displayErrorMessage,
+    navigate: navigate,
   };
 
-  const login = async (
-    alias: string,
-    password: string
-  ): Promise<[User, AuthToken]> => {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+  const [presenter] = useState(props.presenterGenerator(listener));
 
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user, FakeData.instance.authToken];
+  const login = () => {
+    presenter.doLogin(alias, password, rememberMe, props.originalUrl);
   };
 
   const inputFieldGenerator = () => {
     return (
-      <AuthenticationField setAlias={setAlias} setPassword={setPassword} submit={loginOnEnter} ></AuthenticationField>
+      <AuthenticationField
+        setAlias={setAlias}
+        setPassword={setPassword}
+        submit={loginOnEnter}
+      ></AuthenticationField>
     );
   };
 
@@ -92,7 +78,7 @@ const Login = (props: Props) => {
       setRememberMe={setRememberMe}
       submitButtonDisabled={checkSubmitButtonStatus}
       isLoading={isLoading}
-      submit={doLogin}
+      submit={login}
     />
   );
 };

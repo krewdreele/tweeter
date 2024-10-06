@@ -17,12 +17,9 @@ const StatusItemScroller = (props: Props) => {
   const { displayErrorMessage } = useToastListener();
   const [items, setItems] = useState<Status[]>([]);
   const [newItems, setNewItems] = useState<Status[]>([]);
-  const [hasMoreItems, setHasMoreItems] = useState(true);
-  const [lastItem, setLastItem] = useState<Status | null>(null);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
-  const { displayedUser, setDisplayedUser, currentUser, authToken } =
-    useUserInfo();
+  const { displayedUser, authToken } = useUserInfo();
 
   const listener: StatusItemView = {
     addItems: (newItems) => setNewItems(newItems),
@@ -53,9 +50,8 @@ const StatusItemScroller = (props: Props) => {
   const reset = async () => {
     setItems([]);
     setNewItems([]);
-    setLastItem(null);
-    setHasMoreItems(true);
     setChangedDisplayedUser(true);
+    presenter.reset();
   };
 
   const loadMoreItems = async () => {
@@ -69,7 +65,7 @@ const StatusItemScroller = (props: Props) => {
         className="pr-0 mr-0"
         dataLength={items.length}
         next={loadMoreItems}
-        hasMore={hasMoreItems}
+        hasMore={presenter.hasMoreItems}
         loader={<h4>Loading...</h4>}
       >
         {items.map((item, index) => (
