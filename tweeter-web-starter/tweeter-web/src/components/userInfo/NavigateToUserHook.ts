@@ -1,8 +1,8 @@
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "./UserInfoHook";
 import {
-  GetUserPresenter,
-  GetUserView,
+  NavigateToUserPresenter,
+  NavigateToUserView,
 } from "../../presenters/User/GetUserPresenter";
 import { useState } from "react";
 
@@ -21,13 +21,13 @@ const useNavigateToUserListener = (): NavigateToUserListener => {
     return value.substring(index);
   };
 
-  const listener: GetUserView = {
+  const listener: NavigateToUserView = {
     displayErrorMessage: displayErrorMessage,
     setDisplayedUser: setDisplayedUser,
     extractAlias: extractAlias,
   };
 
-  const [presenter] = useState(new GetUserPresenter(listener));
+  const [presenter] = useState(new NavigateToUserPresenter(listener));
 
   return {
     navigateToUser: (event) =>

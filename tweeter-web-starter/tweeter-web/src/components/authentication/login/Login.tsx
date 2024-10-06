@@ -13,7 +13,6 @@ import {
 } from "../../../presenters/Authentication/LoginPresenter";
 
 interface Props {
-  presenterGenerator: (listener: LoginView) => LoginPresenter;
   originalUrl?: string;
 }
 
@@ -44,7 +43,7 @@ const Login = (props: Props) => {
     navigate: navigate,
   };
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(new LoginPresenter(listener));
 
   const login = () => {
     presenter.doLogin(alias, password, rememberMe, props.originalUrl);

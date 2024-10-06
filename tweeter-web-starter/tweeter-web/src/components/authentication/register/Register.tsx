@@ -13,11 +13,7 @@ import {
   RegisterView,
 } from "../../../presenters/Authentication/RegisterPresenter";
 
-interface Props {
-  presenterGenerator: (listener: RegisterView) => RegisterPresenter;
-}
-
-const Register = (props: Props) => {
+const Register = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [alias, setAlias] = useState("");
@@ -50,7 +46,7 @@ const Register = (props: Props) => {
     navigate: navigate,
   };
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(new RegisterPresenter(listener));
 
   const register = () => {
     presenter.doRegister(

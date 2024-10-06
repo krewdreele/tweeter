@@ -106,37 +106,9 @@ const UnauthenticatedRoutes = () => {
 
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={
-          <Login
-            presenterGenerator={(listener: LoginView) =>
-              new LoginPresenter(listener)
-            }
-          />
-        }
-      />
-      <Route
-        path="/register"
-        element={
-          <Register
-            presenterGenerator={(listener: RegisterView) =>
-              new RegisterPresenter(listener)
-            }
-          />
-        }
-      />
-      <Route
-        path="*"
-        element={
-          <Login
-            presenterGenerator={(listener: LoginView) =>
-              new LoginPresenter(listener)
-            }
-            originalUrl={location.pathname}
-          />
-        }
-      />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="*" element={<Login originalUrl={location.pathname} />} />
     </Routes>
   );
 };

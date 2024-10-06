@@ -11,11 +11,7 @@ import {
 } from "../../presenters/Authentication/LogoutPresenter";
 import { useState } from "react";
 
-interface Props {
-  presenterGenerator: (listener: LogoutView) => LogoutPresenter;
-}
-
-const AppNavbar = (props: Props) => {
+const AppNavbar = () => {
   const location = useLocation();
   const { authToken, clearUserInfo } = useUserInfo();
   const { displayInfoMessage, displayErrorMessage, clearLastInfoMessage } =
@@ -28,7 +24,7 @@ const AppNavbar = (props: Props) => {
     clearUserInfo: clearUserInfo,
   };
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(new LogoutPresenter(listener));
 
   const logOut = () => {
     presenter.logOut(authToken!);

@@ -8,11 +8,7 @@ import {
   PostStatusView,
 } from "../../presenters/Status/PostStatusPresenter";
 
-interface Props {
-  presenterGenerator: (listener: PostStatusView) => PostStatusPresenter;
-}
-
-const PostStatus = (props: Props) => {
+const PostStatus = () => {
   const { displayErrorMessage, displayInfoMessage, clearLastInfoMessage } =
     useToastListener();
 
@@ -28,7 +24,7 @@ const PostStatus = (props: Props) => {
     setIsLoading: setIsLoading,
   };
 
-  const [presenter] = useState(props.presenterGenerator(listener));
+  const [presenter] = useState(new PostStatusPresenter(listener));
 
   const clearPost = (event: React.MouseEvent) => {
     event.preventDefault();

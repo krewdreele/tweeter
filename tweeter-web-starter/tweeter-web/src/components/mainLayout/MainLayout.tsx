@@ -15,11 +15,7 @@ import {
 const MainLayout = () => {
   return (
     <>
-      <AppNavbar
-        presenterGenerator={(listener: LogoutView) =>
-          new LogoutPresenter(listener)
-        }
-      />
+      <AppNavbar />
       <div className="container mx-auto px-3 w-100">
         <div className="row gx-4">
           <div className="col-4">
@@ -28,11 +24,7 @@ const MainLayout = () => {
                 <UserInfo />
               </div>
               <div className="p-3 border mt-1 rounded bg-light">
-                <PostStatus
-                  presenterGenerator={(listener: PostStatusView) =>
-                    new PostStatusPresenter(listener)
-                  }
-                />
+                <PostStatus />
               </div>
             </div>
           </div>
