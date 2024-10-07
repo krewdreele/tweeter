@@ -8,12 +8,12 @@ export interface NavigateToUserView {
 }
 
 export class NavigateToUserPresenter {
-  private userService: UserService;
-  private _view: NavigateToUserView;
+  private service: UserService;
+  private view: NavigateToUserView;
 
   public constructor(view: NavigateToUserView) {
-    this._view = view;
-    this.userService = new UserService();
+    this.view = view;
+    this.service = new UserService();
   }
 
   public async navigateToUser(
@@ -24,19 +24,19 @@ export class NavigateToUserPresenter {
     event.preventDefault();
 
     try {
-      const alias = this._view.extractAlias(event.target.toString());
+      const alias = this.view.extractAlias(event.target.toString());
 
-      const user = await this.userService.getUser(authToken!, alias);
+      const user = await this.service.getUser(authToken!, alias);
 
       if (!!user) {
         if (currentUser!.equals(user)) {
-          this._view.setDisplayedUser(currentUser!);
+          this.view.setDisplayedUser(currentUser!);
         } else {
-          this._view.setDisplayedUser(user);
+          this.view.setDisplayedUser(user);
         }
       }
     } catch (error) {
-      this._view.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to get user because of exception: ${error}`
       );
     }

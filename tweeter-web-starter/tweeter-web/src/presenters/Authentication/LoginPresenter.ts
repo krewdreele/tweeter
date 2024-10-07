@@ -15,10 +15,10 @@ export interface LoginView {
 
 export class LoginPresenter {
   private service: AuthenticateService;
-  private _view: LoginView;
+  private view: LoginView;
 
   public constructor(view: LoginView) {
-    this._view = view;
+    this.view = view;
     this.service = new AuthenticateService();
   }
 
@@ -29,23 +29,23 @@ export class LoginPresenter {
     originalUrl?: string | undefined
   ) {
     try {
-      this._view.setIsLoading(true);
+      this.view.setIsLoading(true);
 
       const [user, authToken] = await this.service.login(alias, password);
 
-      this._view.updateUserInfo(user, user, authToken, rememberMe);
+      this.view.updateUserInfo(user, user, authToken, rememberMe);
 
       if (!!originalUrl) {
-        this._view.navigate(originalUrl);
+        this.view.navigate(originalUrl);
       } else {
-        this._view.navigate("/");
+        this.view.navigate("/");
       }
     } catch (error) {
-      this._view.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to log user in because of exception: ${error}`
       );
     } finally {
-      this._view.setIsLoading(false);
+      this.view.setIsLoading(false);
     }
   }
 }

@@ -14,23 +14,23 @@ export interface LogoutView {
 
 export class LogoutPresenter {
   private service: AuthenticateService;
-  private _view: LogoutView;
+  private view: LogoutView;
 
   public constructor(view: LogoutView) {
-    this._view = view;
+    this.view = view;
     this.service = new AuthenticateService();
   }
 
   public async logOut(authToken: AuthToken) {
-    this._view.displayInfoMessage("Logging Out...", 0);
+    this.view.displayInfoMessage("Logging Out...", 0);
 
     try {
       await this.service.logout(authToken!);
 
-      this._view.clearLastInfoMessage();
-      this._view.clearUserInfo();
+      this.view.clearLastInfoMessage();
+      this.view.clearUserInfo();
     } catch (error) {
-      this._view.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to log user out because of exception: ${error}`
       );
     }

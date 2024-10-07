@@ -15,10 +15,10 @@ export interface PostStatusView {
 
 export class PostStatusPresenter {
   private service: StatusService;
-  private _view: PostStatusView;
+  private view: PostStatusView;
 
   public constructor(view: PostStatusView) {
-    this._view = view;
+    this.view = view;
     this.service = new StatusService();
   }
 
@@ -31,22 +31,22 @@ export class PostStatusPresenter {
     event.preventDefault();
 
     try {
-      this._view.setIsLoading(true);
-      this._view.displayInfoMessage("Posting status...", 0);
+      this.view.setIsLoading(true);
+      this.view.displayInfoMessage("Posting status...", 0);
 
       const status = new Status(post, currentUser!, Date.now());
 
       await this.service.postStatus(authToken!, status);
 
-      this._view.setPost("");
-      this._view.displayInfoMessage("Status posted!", 2000);
+      this.view.setPost("");
+      this.view.displayInfoMessage("Status posted!", 2000);
     } catch (error) {
-      this._view.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to post the status because of exception: ${error}`
       );
     } finally {
-      this._view.clearLastInfoMessage();
-      this._view.setIsLoading(false);
+      this.view.clearLastInfoMessage();
+      this.view.setIsLoading(false);
     }
   }
 }

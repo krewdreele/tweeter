@@ -15,10 +15,10 @@ export interface RegisterView {
 
 export class RegisterPresenter {
   private service: AuthenticateService;
-  private _view: RegisterView;
+  private view: RegisterView;
 
   public constructor(view: RegisterView) {
-    this._view = view;
+    this.view = view;
     this.service = new AuthenticateService();
   }
 
@@ -32,7 +32,7 @@ export class RegisterPresenter {
     rememberMe: boolean
   ) {
     try {
-      this._view.setIsLoading(true);
+      this.view.setIsLoading(true);
 
       const [user, authToken] = await this.service.register(
         firstName,
@@ -43,14 +43,14 @@ export class RegisterPresenter {
         imageFileExtension
       );
 
-      this._view.updateUserInfo(user, user, authToken, rememberMe);
-      this._view.navigate("/");
+      this.view.updateUserInfo(user, user, authToken, rememberMe);
+      this.view.navigate("/");
     } catch (error) {
-      this._view.displayErrorMessage(
+      this.view.displayErrorMessage(
         `Failed to register user because of exception: ${error}`
       );
     } finally {
-      this._view.setIsLoading(false);
+      this.view.setIsLoading(false);
     }
   }
 }
