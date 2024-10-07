@@ -1,5 +1,5 @@
 import { User, AuthToken } from "tweeter-shared";
-import { LoginService } from "../../model/service/LoginService";
+import { AuthenticateService } from "../../model/service/AuthenticateService";
 
 export interface LoginView {
   setIsLoading: (value: boolean) => void;
@@ -14,12 +14,12 @@ export interface LoginView {
 }
 
 export class LoginPresenter {
-  private loginService: LoginService;
+  private service: AuthenticateService;
   private _view: LoginView;
 
   public constructor(view: LoginView) {
     this._view = view;
-    this.loginService = new LoginService();
+    this.service = new AuthenticateService();
   }
 
   public async doLogin(
@@ -31,7 +31,7 @@ export class LoginPresenter {
     try {
       this._view.setIsLoading(true);
 
-      const [user, authToken] = await this.loginService.login(alias, password);
+      const [user, authToken] = await this.service.login(alias, password);
 
       this._view.updateUserInfo(user, user, authToken, rememberMe);
 

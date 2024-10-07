@@ -1,5 +1,5 @@
 import { User, AuthToken } from "tweeter-shared";
-import { RegisterService } from "../../model/service/RegisterService";
+import { AuthenticateService } from "../../model/service/AuthenticateService";
 
 export interface RegisterView {
   setIsLoading: (value: boolean) => void;
@@ -14,12 +14,12 @@ export interface RegisterView {
 }
 
 export class RegisterPresenter {
-  private registerService: RegisterService;
+  private service: AuthenticateService;
   private _view: RegisterView;
 
   public constructor(view: RegisterView) {
     this._view = view;
-    this.registerService = new RegisterService();
+    this.service = new AuthenticateService();
   }
 
   public async doRegister(
@@ -34,7 +34,7 @@ export class RegisterPresenter {
     try {
       this._view.setIsLoading(true);
 
-      const [user, authToken] = await this.registerService.register(
+      const [user, authToken] = await this.service.register(
         firstName,
         lastName,
         alias,

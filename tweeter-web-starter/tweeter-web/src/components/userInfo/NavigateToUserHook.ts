@@ -3,7 +3,7 @@ import useUserInfo from "./UserInfoHook";
 import {
   NavigateToUserPresenter,
   NavigateToUserView,
-} from "../../presenters/User/GetUserPresenter";
+} from "../../presenters/User/NavigateToUserPresenter";
 import { useState } from "react";
 
 interface NavigateToUserListener {
