@@ -48,8 +48,8 @@ const Register = () => {
 
   const [presenter] = useState(new RegisterPresenter(listener));
 
-  const register = () => {
-    presenter.doRegister(
+  const register = async () => {
+    await presenter.doRegister(
       firstName,
       lastName,
       alias,

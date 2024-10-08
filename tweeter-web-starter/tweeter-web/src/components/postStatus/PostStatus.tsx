@@ -34,6 +34,11 @@ const PostStatus = () => {
     return !post.trim() || !authToken || !currentUser;
   };
 
+  const submit = async (event: React.MouseEvent) => {
+    event.preventDefault();
+    await presenter.submitPost(authToken!, post, currentUser!);
+  };
+
   return (
     <div className={isLoading ? "loading" : ""}>
       <form>
@@ -56,9 +61,7 @@ const PostStatus = () => {
             type="button"
             disabled={checkButtonStatus()}
             style={{ width: "8em" }}
-            onClick={(event) =>
-              presenter.submitPost(event, authToken!, post, currentUser!)
-            }
+            onClick={(event) => submit(event)}
           >
             {isLoading ? (
               <span

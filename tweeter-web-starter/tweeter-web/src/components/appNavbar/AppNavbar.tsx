@@ -26,8 +26,8 @@ const AppNavbar = () => {
 
   const [presenter] = useState(new LogoutPresenter(listener));
 
-  const logOut = () => {
-    presenter.logOut(authToken!);
+  const logOut = async () => {
+    await presenter.logOut(authToken!);
   };
 
   return (
