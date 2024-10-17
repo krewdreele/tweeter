@@ -1,25 +1,23 @@
-import { User } from "tweeter-shared";
-import { useState, useEffect } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
-import UserItem from "../userItem/UserItem";
+import { useState, useEffect } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-import { UserItemPresenter } from "../../presenters/User/UserItemPresenter";
-import { ItemView } from "../../presenters/ItemPresenter";
+import { ItemPresenter, ItemView } from "../../presenters/ItemPresenter";
 
-interface Props {
-  presenterGenerator: (view: ItemView<User>) => UserItemPresenter;
+interface Props<T, U> {
+  presenterGenerator: (view: ItemView<T>) => ItemPresenter<T, U>;
+  itemComponentGenerator: (item: T) => JSX.Element;
 }
 
-const UserItemScroller = (props: Props) => {
+const ItemScroller = <T, U>(props: Props<T, U>) => {
   const { displayErrorMessage } = useToastListener();
-  const [items, setItems] = useState<User[]>([]);
-  const [newItems, setNewItems] = useState<User[]>([]);
+  const [items, setItems] = useState<T[]>([]);
+  const [newItems, setNewItems] = useState<T[]>([]);
   const [changedDisplayedUser, setChangedDisplayedUser] = useState(true);
 
   const { displayedUser, authToken } = useUserInfo();
 
-  const listener: ItemView<User> = {
+  const listener: ItemView<T> = {
     addItems: (newItems) => setNewItems(newItems),
     displayErrorMessage: displayErrorMessage,
   };
@@ -71,7 +69,7 @@ const UserItemScroller = (props: Props) => {
             key={index}
             className="row mb-3 mx-0 px-0 border rounded bg-white"
           >
-            <UserItem value={item} />
+            {props.itemComponentGenerator(item)}
           </div>
         ))}
       </InfiniteScroll>
@@ -79,4 +77,4 @@ const UserItemScroller = (props: Props) => {
   );
 };
 
-export default UserItemScroller;
+export default ItemScroller;
