@@ -7,10 +7,8 @@ import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationField from "../AuthenticationField";
 import useUserInfo from "../../userInfo/UserInfoHook";
-import {
-  LoginView,
-  LoginPresenter,
-} from "../../../presenters/Authentication/LoginPresenter";
+import { LoginPresenter } from "../../../presenters/Authentication/LoginPresenter";
+import { AuthenticationView } from "../../../presenters/Authentication/AuthenticationPresenter";
 
 interface Props {
   originalUrl?: string;
@@ -36,7 +34,7 @@ const Login = (props: Props) => {
     }
   };
 
-  const listener: LoginView = {
+  const listener: AuthenticationView = {
     setIsLoading: setIsLoading,
     updateUserInfo: updateUserInfo,
     displayErrorMessage: displayErrorMessage,
@@ -46,7 +44,12 @@ const Login = (props: Props) => {
   const [presenter] = useState(new LoginPresenter(listener));
 
   const login = async () => {
-    await presenter.doLogin(alias, password, rememberMe, props.originalUrl);
+    await presenter.authenticate(
+      alias,
+      password,
+      rememberMe,
+      props.originalUrl
+    );
   };
 
   const inputFieldGenerator = () => {

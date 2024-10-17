@@ -1,56 +1,31 @@
 import { User, AuthToken } from "tweeter-shared";
-import { AuthenticateService } from "../../model/service/AuthenticateService";
+import { AuthenticationPresenter } from "./AuthenticationPresenter";
 
-export interface RegisterView {
-  setIsLoading: (value: boolean) => void;
-  updateUserInfo: (
-    currentUser: User,
-    displayedUser: User | null,
-    authToken: AuthToken,
-    remember: boolean
-  ) => void;
-  displayErrorMessage: (error: string) => void;
-  navigate: (path: string) => void;
-}
-
-export class RegisterPresenter {
-  private service: AuthenticateService;
-  private view: RegisterView;
-
-  public constructor(view: RegisterView) {
-    this.view = view;
-    this.service = new AuthenticateService();
-  }
-
-  public async doRegister(
-    firstName: string,
-    lastName: string,
+export class RegisterPresenter extends AuthenticationPresenter {
+  protected serviceOperation(
     alias: string,
     password: string,
-    imageBytes: Uint8Array,
-    imageFileExtension: string,
-    rememberMe: boolean
-  ) {
-    try {
-      this.view.setIsLoading(true);
+    firstName?: string,
+    lastName?: string,
+    imageBytes?: Uint8Array,
+    imageFileExtension?: string,
+    originalUrl?: string
+  ): Promise<[User, AuthToken]> {
+    return this.service.register(
+      firstName!,
+      lastName!,
+      alias,
+      password,
+      imageBytes!,
+      imageFileExtension!
+    );
+  }
 
-      const [user, authToken] = await this.service.register(
-        firstName,
-        lastName,
-        alias,
-        password,
-        imageBytes,
-        imageFileExtension
-      );
+  protected getItemDescription(): string {
+    return "register";
+  }
 
-      this.view.updateUserInfo(user, user, authToken, rememberMe);
-      this.view.navigate("/");
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to register user because of exception: ${error}`
-      );
-    } finally {
-      this.view.setIsLoading(false);
-    }
+  protected navigate(originalUrl?: string): void {
+    this.view.navigate("/");
   }
 }

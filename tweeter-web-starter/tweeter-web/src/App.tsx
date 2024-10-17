@@ -14,19 +14,9 @@ import UserItemScroller from "./components/mainLayout/UserItemScroller";
 import StatusItemScroller from "./components/mainLayout/StatusItemScroller";
 import useUserInfo from "./components/userInfo/UserInfoHook";
 import { FolloweePresenter } from "./presenters/User/FolloweePresenter";
-import { UserItemView } from "./presenters/User/UserItemPresenter";
 import { FollowerPresenter } from "./presenters/User/FollowerPresenter";
-import { StatusItemView } from "./presenters/Status/StatusItemPresenter";
 import { FeedPresenter } from "./presenters/Status/FeedPresenter";
 import { StoryPresenter } from "./presenters/Status/StoryPresenter";
-import {
-  LoginView,
-  LoginPresenter,
-} from "./presenters/Authentication/LoginPresenter";
-import {
-  RegisterView,
-  RegisterPresenter,
-} from "./presenters/Authentication/RegisterPresenter";
 
 const App = () => {
   const { currentUser, authToken } = useUserInfo();
@@ -58,9 +48,7 @@ const AuthenticatedRoutes = () => {
           path="feed"
           element={
             <StatusItemScroller
-              presenterGenerator={(view: StatusItemView) =>
-                new FeedPresenter(view)
-              }
+              presenterGenerator={(view) => new FeedPresenter(view)}
             />
           }
         />
@@ -77,9 +65,7 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={1}
-              presenterGenerator={(view: UserItemView) =>
-                new FolloweePresenter(view)
-              }
+              presenterGenerator={(view) => new FolloweePresenter(view)}
             />
           }
         />
@@ -88,9 +74,7 @@ const AuthenticatedRoutes = () => {
           element={
             <UserItemScroller
               key={2}
-              presenterGenerator={(view: UserItemView) =>
-                new FollowerPresenter(view)
-              }
+              presenterGenerator={(view) => new FollowerPresenter(view)}
             />
           }
         />

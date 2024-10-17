@@ -4,13 +4,11 @@ import { Status } from "tweeter-shared";
 import { useState, useEffect } from "react";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "../userInfo/UserInfoHook";
-import {
-  StatusItemPresenter,
-  StatusItemView,
-} from "../../presenters/Status/StatusItemPresenter";
+import { StatusItemPresenter } from "../../presenters/Status/StatusItemPresenter";
+import { ItemView } from "../../presenters/ItemPresenter";
 
 interface Props {
-  presenterGenerator: (view: StatusItemView) => StatusItemPresenter;
+  presenterGenerator: (view: ItemView<Status>) => StatusItemPresenter;
 }
 
 const StatusItemScroller = (props: Props) => {
@@ -21,7 +19,7 @@ const StatusItemScroller = (props: Props) => {
 
   const { displayedUser, authToken } = useUserInfo();
 
-  const listener: StatusItemView = {
+  const listener: ItemView<Status> = {
     addItems: (newItems) => setNewItems(newItems),
     displayErrorMessage: displayErrorMessage,
   };

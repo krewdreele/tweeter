@@ -8,10 +8,8 @@ import { Buffer } from "buffer";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationField from "../AuthenticationField";
 import useUserInfo from "../../userInfo/UserInfoHook";
-import {
-  RegisterPresenter,
-  RegisterView,
-} from "../../../presenters/Authentication/RegisterPresenter";
+import { RegisterPresenter } from "../../../presenters/Authentication/RegisterPresenter";
+import { AuthenticationView } from "../../../presenters/Authentication/AuthenticationPresenter";
 
 const Register = () => {
   const [firstName, setFirstName] = useState("");
@@ -39,7 +37,7 @@ const Register = () => {
     );
   };
 
-  const listener: RegisterView = {
+  const listener: AuthenticationView = {
     setIsLoading: setIsLoading,
     updateUserInfo: updateUserInfo,
     displayErrorMessage: displayErrorMessage,
@@ -49,14 +47,14 @@ const Register = () => {
   const [presenter] = useState(new RegisterPresenter(listener));
 
   const register = async () => {
-    await presenter.doRegister(
-      firstName,
-      lastName,
+    await presenter.authenticate(
       alias,
       password,
+      rememberMe,
+      firstName,
+      lastName,
       imageBytes,
-      imageFileExtension,
-      rememberMe
+      imageFileExtension
     );
   };
 

@@ -1,24 +1,17 @@
 import { AuthToken, Status, User } from "tweeter-shared";
 import { StatusService } from "../../model/service/StatusService";
+import { MessageView, Presenter } from "../Presenter";
 
-export interface PostStatusView {
+export interface PostStatusView extends MessageView {
   setIsLoading: (value: boolean) => void;
-  displayInfoMessage: (
-    message: string,
-    duration: number,
-    bootstrapClasses?: string
-  ) => void;
   setPost: (post: string) => void;
-  displayErrorMessage: (message: string, bootstrapClasses?: string) => void;
-  clearLastInfoMessage: () => void;
 }
 
-export class PostStatusPresenter {
+export class PostStatusPresenter extends Presenter<PostStatusView> {
   private service: StatusService;
-  private view: PostStatusView;
 
   public constructor(view: PostStatusView) {
-    this.view = view;
+    super(view);
     this.service = new StatusService();
   }
 
@@ -27,23 +20,23 @@ export class PostStatusPresenter {
     post: string,
     currentUser: User
   ) {
-    try {
-      this.view.setIsLoading(true);
-      this.view.displayInfoMessage("Posting status...", 0);
+    this.doFailureReportingOperation(
+      async () => {
+        this.view.setIsLoading(true);
+        this.view.displayInfoMessage("Posting status...", 0);
 
-      const status = new Status(post, currentUser!, Date.now());
+        const status = new Status(post, currentUser!, Date.now());
 
-      await this.service.postStatus(authToken!, status);
+        await this.service.postStatus(authToken!, status);
 
-      this.view.setPost("");
-      this.view.displayInfoMessage("Status posted!", 2000);
-    } catch (error) {
-      this.view.displayErrorMessage(
-        `Failed to post the status because of exception: ${error}`
-      );
-    } finally {
-      this.view.clearLastInfoMessage();
-      this.view.setIsLoading(false);
-    }
+        this.view.setPost("");
+        this.view.displayInfoMessage("Status posted!", 2000);
+      },
+      "post status",
+      () => {
+        this.view.clearLastInfoMessage();
+        this.view.setIsLoading(false);
+      }
+    );
   }
 }
