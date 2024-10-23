@@ -51,6 +51,7 @@ const Register = () => {
       alias,
       password,
       rememberMe,
+      "/",
       firstName,
       lastName,
       imageBytes,

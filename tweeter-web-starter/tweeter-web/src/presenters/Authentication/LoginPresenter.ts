@@ -4,11 +4,7 @@ import { AuthenticationPresenter } from "./AuthenticationPresenter";
 export class LoginPresenter extends AuthenticationPresenter {
   protected serviceOperation(
     alias: string,
-    password: string,
-    firstName?: string,
-    lastName?: string,
-    imageBytes?: Uint8Array,
-    imageFileExtension?: string
+    password: string
   ): Promise<[User, AuthToken]> {
     return this.service.login(alias, password);
   }

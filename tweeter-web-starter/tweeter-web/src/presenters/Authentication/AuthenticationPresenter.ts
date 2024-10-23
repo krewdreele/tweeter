@@ -25,11 +25,11 @@ export abstract class AuthenticationPresenter extends Presenter<AuthenticationVi
     alias: string,
     password: string,
     rememberMe: boolean,
+    originalUrl?: string,
     firstName?: string,
     lastName?: string,
     imageBytes?: Uint8Array,
-    imageFileExtension?: string,
-    originalUrl?: string
+    imageFileExtension?: string
   ) {
     this.doFailureReportingOperation(
       async () => {

@@ -8,8 +8,7 @@ export class RegisterPresenter extends AuthenticationPresenter {
     firstName?: string,
     lastName?: string,
     imageBytes?: Uint8Array,
-    imageFileExtension?: string,
-    originalUrl?: string
+    imageFileExtension?: string
   ): Promise<[User, AuthToken]> {
     return this.service.register(
       firstName!,
@@ -25,7 +24,7 @@ export class RegisterPresenter extends AuthenticationPresenter {
     return "register";
   }
 
-  protected navigate(originalUrl?: string): void {
+  protected navigate(): void {
     this.view.navigate("/");
   }
 }

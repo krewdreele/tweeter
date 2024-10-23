@@ -3,7 +3,6 @@ import "bootstrap/dist/css/bootstrap.css";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AuthenticationFormLayout from "../AuthenticationFormLayout";
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../../toaster/ToastListenerHook";
 import AuthenticationField from "../AuthenticationField";
 import useUserInfo from "../../userInfo/UserInfoHook";
@@ -12,6 +11,7 @@ import { AuthenticationView } from "../../../presenters/Authentication/Authentic
 
 interface Props {
   originalUrl?: string;
+  presenter?: LoginPresenter;
 }
 
 const Login = (props: Props) => {
@@ -41,7 +41,7 @@ const Login = (props: Props) => {
     navigate: navigate,
   };
 
-  const [presenter] = useState(new LoginPresenter(listener));
+  const [presenter] = useState(props.presenter ?? new LoginPresenter(listener));
 
   const login = async () => {
     await presenter.authenticate(
