@@ -37,7 +37,7 @@ const PostStatus = (props: Props) => {
   };
 
   const checkButtonStatus: () => boolean = () => {
-    return !post.trim();
+    return !post.trim() || !authToken || !currentUser;
   };
 
   const submit = async (event: React.MouseEvent) => {

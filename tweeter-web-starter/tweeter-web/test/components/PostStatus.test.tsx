@@ -9,10 +9,31 @@ import PostStatus from "../../src/components/postStatus/PostStatus";
 import { PostStatusPresenter } from "../../src/presenters/Status/PostStatusPresenter";
 import { anything, instance, mock, verify } from "ts-mockito";
 import { AuthToken, User } from "tweeter-shared";
+import useUserInfo from "../../src/components/userInfo/UserInfoHook";
 
 library.add(fab);
 
+jest.mock("../../src/components/userInfo/UserInfoHook", () => ({
+  ...jest.requireActual("../../src/components/userInfo/UserInfoHook"),
+  __esModule: true,
+  default: jest.fn(),
+}));
+
 describe("Post Status Component", () => {
+  let mockUser: User;
+  let mockAuthToken: AuthToken;
+  mockUser = mock<User>();
+  mockAuthToken = mock<AuthToken>();
+
+  const mockUserInstance = instance(mockUser);
+  const mockAuthTokenInstance = instance(mockAuthToken);
+
+  beforeAll(() => {
+    (useUserInfo as jest.Mock).mockReturnValue({
+      currentUser: mockUserInstance,
+      authToken: mockAuthTokenInstance,
+    });
+  });
   it("has disabled buttons on first render", () => {
     const { postStatus, clearStatus } = getElementsFromRender();
 
@@ -47,10 +68,13 @@ describe("Post Status Component", () => {
     const { postStatus, textField, user } =
       getElementsFromRender(presenterInstance);
 
-    await user.type(textField, "hello");
+    const post = "hello";
+    await user.type(textField, post);
     await user.click(postStatus);
 
-    verify(mockPresenter.submitPost(anything(), "hello", anything())).once();
+    verify(
+      mockPresenter.submitPost(mockAuthTokenInstance, post, mockUserInstance)
+    ).once();
   });
 });
 
