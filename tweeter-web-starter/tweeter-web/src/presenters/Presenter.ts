@@ -1,5 +1,3 @@
-import { User, AuthToken } from "tweeter-shared";
-
 export interface View {
   displayErrorMessage: (message: string, bootstrapClasses?: string) => void;
 }
