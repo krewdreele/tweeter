@@ -6,12 +6,13 @@ export class FollowerPresenter extends UserItemPresenter {
   protected getItemDescription(): string {
     return "load followers";
   }
-  protected getMoreItems(authToken: AuthToken, userAlias: string) {
-    return this.service.loadMoreFollowers(
-      authToken!,
-      userAlias,
-      PAGE_SIZE,
-      this.lastItem
-    );
+  protected async getMoreItems(authToken: AuthToken, userAlias: string) {
+    return await this.service.loadMoreFollowers(
+      {
+      token: authToken!.token,
+      userAlias: userAlias,
+      pageSize: PAGE_SIZE,
+      lastItem: this.lastItem ? this.lastItem.dto : null
+    });
   }
 }
