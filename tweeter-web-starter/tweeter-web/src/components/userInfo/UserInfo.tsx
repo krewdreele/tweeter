@@ -1,13 +1,14 @@
 import "./UserInfo.css";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { AuthToken, FakeData, User } from "tweeter-shared";
 import useToastListener from "../toaster/ToastListenerHook";
 import useUserInfo from "./UserInfoHook";
 import {
   UserInfoPresenter,
   UserInfoView,
 } from "../../presenters/User/UserInfoPresenter";
+import { FollowPresenter } from "../../presenters/User/FollowPresenter";
+import { UnfollowPresenter } from "../../presenters/User/UnfollowPresenter";
 
 const UserInfo = () => {
   const [isFollower, setIsFollower] = useState(false);
@@ -26,9 +27,9 @@ const UserInfo = () => {
   }
 
   useEffect(() => {
-    presenter.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
-    presenter.setNumbFollowees(authToken!, displayedUser!);
-    presenter.setNumbFollowers(authToken!, displayedUser!);
+    userInfoPresenter.setIsFollowerStatus(authToken!, currentUser!, displayedUser!);
+    userInfoPresenter.setNumbFollowees(authToken!, displayedUser!);
+    userInfoPresenter.setNumbFollowers(authToken!, displayedUser!);
   }, [displayedUser]);
 
   const listener: UserInfoView = {
@@ -41,7 +42,9 @@ const UserInfo = () => {
     displayInfoMessage: displayInfoMessage,
   };
 
-  const [presenter] = useState(new UserInfoPresenter(listener));
+  const [userInfoPresenter] = useState(new UserInfoPresenter(listener));
+  const [followPresenter] = useState(new FollowPresenter(listener));
+  const [unfollowPresenter] = useState(new UnfollowPresenter(listener));
 
   const switchToLoggedInUser = (event: React.MouseEvent): void => {
     event.preventDefault();
@@ -96,7 +99,7 @@ const UserInfo = () => {
                       type="submit"
                       style={{ width: "6em" }}
                       onClick={(event) =>
-                        presenter.unfollowDisplayedUser(
+                        unfollowPresenter.changeFollowStatus(
                           event,
                           authToken!,
                           displayedUser!
@@ -120,7 +123,7 @@ const UserInfo = () => {
                       type="submit"
                       style={{ width: "6em" }}
                       onClick={(event) =>
-                        presenter.followDisplayedUser(
+                        followPresenter.changeFollowStatus(
                           event,
                           authToken!,
                           displayedUser!

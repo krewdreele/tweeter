@@ -1,4 +1,7 @@
 import {
+  CountResponse,
+  IsFollowerRequest,
+  IsFollowerResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
@@ -42,9 +45,7 @@ export class ServerFacade {
     }
   }
 
-  public async getUser(
-    request: UserAliasRequest,
-  ): Promise<User> {
+  public async getUser(request: UserAliasRequest): Promise<User> {
     const response = await this.clientCommunicator.doPost<
       UserAliasRequest,
       UserItemResponse
@@ -59,6 +60,36 @@ export class ServerFacade {
       } else {
         return user;
       }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async getIsFollower(request: IsFollowerRequest): Promise<boolean> {
+    const response = await this.clientCommunicator.doPost<
+      IsFollowerRequest,
+      IsFollowerResponse
+    >(request, `/user/isFollower`);
+
+    // Handle errors
+    if (response.success) {
+      return response.isFollower;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async getCount(request: UserAliasRequest, type: string): Promise<number> {
+    const response = await this.clientCommunicator.doPost<
+      UserAliasRequest,
+      CountResponse
+    >(request, `/${type}/count`);
+
+    // Handle errors
+    if (response.success) {
+      return response.count;
     } else {
       console.error(response);
       throw new Error(response.message ?? "unknown error");
