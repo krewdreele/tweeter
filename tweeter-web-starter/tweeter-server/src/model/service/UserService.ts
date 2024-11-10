@@ -36,11 +36,13 @@ export class UserService {
   }
 
   public async getUser(
-    authToken: AuthToken,
+    token: string,
     alias: string
-  ): Promise<User | null> {
+  ): Promise<UserDto | null> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
+    const user = FakeData.instance.findUserByAlias(alias);
+
+    return user ? user.dto : null;
   }
 
   public async getIsFollowerStatus(

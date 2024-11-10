@@ -25,7 +25,7 @@ export class NavigateToUserPresenter extends Presenter<NavigateToUserView> {
     this.doFailureReportingOperation(async () => {
       const alias = this.view.extractAlias(event.target.toString());
 
-      const user = await this.service.getUser(authToken!, alias);
+      const user = await this.service.getUser({token: authToken.token, userAlias: alias});
 
       if (!!user) {
         if (currentUser!.equals(user)) {

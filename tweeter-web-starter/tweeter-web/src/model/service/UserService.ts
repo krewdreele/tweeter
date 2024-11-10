@@ -1,4 +1,4 @@
-import { AuthToken, User, FakeData, TweeterRequest, PagedUserItemRequest } from "tweeter-shared";
+import { AuthToken, User, FakeData, TweeterRequest, PagedUserItemRequest, UserAliasRequest } from "tweeter-shared";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class UserService {
@@ -20,11 +20,10 @@ export class UserService {
   }
 
   public async getUser(
-    authToken: AuthToken,
-    alias: string
+    request: UserAliasRequest
   ): Promise<User | null> {
     // TODO: Replace with the result of calling server
-    return FakeData.instance.findUserByAlias(alias);
+    return await this.server.getUser(request);
   }
 
   public async getIsFollowerStatus(

@@ -2,7 +2,9 @@ import {
   PagedUserItemRequest,
   PagedUserItemResponse,
   User,
+  UserAliasRequest,
   UserDto,
+  UserItemResponse,
 } from "tweeter-shared";
 import { ClientCommunicator } from "./ClientCommunicator";
 
@@ -33,6 +35,29 @@ export class ServerFacade {
         throw new Error(`No ${type} found`);
       } else {
         return [items, response.hasMore];
+      }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async getUser(
+    request: UserAliasRequest,
+  ): Promise<User> {
+    const response = await this.clientCommunicator.doPost<
+      UserAliasRequest,
+      UserItemResponse
+    >(request, `/user`);
+
+    const user = response.user ? User.fromDto(response.user) : null;
+
+    // Handle errors
+    if (response.success) {
+      if (user == null) {
+        throw new Error(`No user found`);
+      } else {
+        return user;
       }
     } else {
       console.error(response);
