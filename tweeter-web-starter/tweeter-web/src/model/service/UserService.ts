@@ -46,9 +46,7 @@ export class UserService {
     await new Promise((f) => setTimeout(f, 2000));
 
     // TODO: Call the server
-
-    const followerCount = await this.server.getCount(request, "follower");
-    const followeeCount = await this.server.getCount(request, "followee");
+    const [followerCount, followeeCount] = await this.server.follow(request);
 
     return [followerCount, followeeCount];
   }
@@ -61,8 +59,7 @@ export class UserService {
 
     // TODO: Call the server
 
-    const followerCount = await this.server.getCount(request, "follower");
-    const followeeCount = await this.server.getCount(request, "followee");
+    const [followerCount, followeeCount] = await this.server.unfollow(request);
 
     return [followerCount, followeeCount];
   }

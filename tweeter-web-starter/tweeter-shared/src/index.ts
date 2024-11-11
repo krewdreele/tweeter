@@ -31,6 +31,7 @@ export type { PagedUserItemResponse } from "./model/net/res/PagedUserItemRespons
 export type { UserItemResponse } from "./model/net/res/UserItemResponse";
 export type { IsFollowerResponse } from "./model/net/res/IsFollowerResponse";
 export type { CountResponse } from "./model/net/res/CountResponse";
+export type { FollowResponse } from "./model/net/res/FollowResponse";
 
 //
 // Other

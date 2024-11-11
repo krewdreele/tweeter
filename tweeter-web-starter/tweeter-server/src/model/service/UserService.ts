@@ -35,10 +35,7 @@ export class UserService {
     return [dtos, hasMore];
   }
 
-  public async getUser(
-    token: string,
-    alias: string
-  ): Promise<UserDto | null> {
+  public async getUser(token: string, alias: string): Promise<UserDto | null> {
     // TODO: Replace with the result of calling server
     const user = FakeData.instance.findUserByAlias(alias);
 
@@ -50,7 +47,6 @@ export class UserService {
     userAlias: string,
     selectedUserAlias: string
   ): Promise<boolean> {
-    
     return FakeData.instance.isFollower();
   }
 
@@ -74,11 +70,7 @@ export class UserService {
     token: string,
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
-    // Pause so we can see the follow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
     // TODO: Call the server
-
     const followerCount = await this.getFollowerCount(token, userAlias);
     const followeeCount = await this.getFolloweeCount(token, userAlias);
 
@@ -90,18 +82,8 @@ export class UserService {
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
     // Pause so we can see the unfollow message. Remove when connected to the server
-    await new Promise((f) => setTimeout(f, 2000));
-
-    // TODO: Call the server
-
-    const followerCount = await this.getFollowerCount(
-      token,
-      userAlias
-    );
-    const followeeCount = await this.getFolloweeCount(
-      token,
-      userAlias
-    );
+    const followerCount = await this.getFollowerCount(token, userAlias);
+    const followeeCount = await this.getFolloweeCount(token, userAlias);
 
     return [followerCount, followeeCount];
   }

@@ -1,9 +1,11 @@
 import {
   CountResponse,
+  FollowResponse,
   IsFollowerRequest,
   IsFollowerResponse,
   PagedUserItemRequest,
   PagedUserItemResponse,
+  TweeterResponse,
   User,
   UserAliasRequest,
   UserDto,
@@ -81,7 +83,10 @@ export class ServerFacade {
     }
   }
 
-  public async getCount(request: UserAliasRequest, type: string): Promise<number> {
+  public async getCount(
+    request: UserAliasRequest,
+    type: string
+  ): Promise<number> {
     const response = await this.clientCommunicator.doPost<
       UserAliasRequest,
       CountResponse
@@ -90,6 +95,38 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       return response.count;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async follow(
+    request: UserAliasRequest
+  ): Promise<[followerCount: number, followeeCount: number]> {
+    const response = await this.clientCommunicator.doPost<
+      UserAliasRequest,
+      FollowResponse
+    >(request, `/user/follow`);
+
+    if (response.success) {
+      return [response.followerCount, response.followeeCount];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async unfollow(
+    request: UserAliasRequest
+  ): Promise<[followerCount: number, followeeCount: number]> {
+    const response = await this.clientCommunicator.doPost<
+      UserAliasRequest,
+      FollowResponse
+    >(request, `/user/unfollow`);
+
+    if (response.success) {
+      return [response.followerCount, response.followeeCount];
     } else {
       console.error(response);
       throw new Error(response.message ?? "unknown error");
