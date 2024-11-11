@@ -5,8 +5,10 @@ import {
   IsFollowerResponse,
   PagedItemRequest,
   PagedItemResponse,
+  PostStatusRequest,
   Status,
   StatusDto,
+  TweeterResponse,
   User,
   UserAliasRequest,
   UserDto,
@@ -157,6 +159,21 @@ export class ServerFacade {
         return [items, response.hasMore];
       }
     } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async postStatus(request: PostStatusRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      PostStatusRequest,
+      TweeterResponse
+    >(request, `/story/post`);
+
+    if(response.success){
+      return
+    }
+    else{
       console.error(response);
       throw new Error(response.message ?? "unknown error");
     }

@@ -23,6 +23,7 @@ export type { TweeterRequest } from "./model/net/req/TweeterRequest";
 export type { PagedItemRequest } from "./model/net/req/PagedUserItemRequest";
 export type { UserAliasRequest } from "./model/net/req/UserAliasRequest";
 export type { IsFollowerRequest } from "./model/net/req/IsFollowerRequest";
+export type { PostStatusRequest } from "./model/net/req/PostStatusRequest";
 
 //
 // Responses
