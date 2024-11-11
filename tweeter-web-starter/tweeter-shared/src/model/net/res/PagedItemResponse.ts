@@ -1,5 +1,5 @@
 import { UserDto } from "../../dto/UserDto";
-import {TweeterResponse} from "../res/TweeterResponse";
+import {TweeterResponse} from "./TweeterResponse";
 
 export interface PagedItemResponse<T> extends TweeterResponse {
     readonly items: T[] | null,

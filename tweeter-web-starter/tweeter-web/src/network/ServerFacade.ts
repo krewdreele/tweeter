@@ -1,13 +1,18 @@
 import {
+  AuthenticateResponse,
+  AuthToken,
   CountResponse,
   FollowResponse,
   IsFollowerRequest,
   IsFollowerResponse,
+  LoginRequest,
   PagedItemRequest,
   PagedItemResponse,
   PostStatusRequest,
+  RegisterRequest,
   Status,
   StatusDto,
+  TweeterRequest,
   TweeterResponse,
   User,
   UserAliasRequest,
@@ -169,6 +174,68 @@ export class ServerFacade {
       PostStatusRequest,
       TweeterResponse
     >(request, `/story/post`);
+
+    if (response.success) {
+      return;
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async login(
+    request: LoginRequest
+  ): Promise<[user: User, authToken: AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      LoginRequest,
+      AuthenticateResponse
+    >(request, "/login");
+
+    const user = response.user ? User.fromDto(response.user) : null;
+    const token = AuthToken.fromDto(response.authToken);
+
+    // Handle errors
+    if (response.success) {
+      if (user == null) {
+        throw new Error(`Unable to login`);
+      } else {
+        return [user, token];
+      }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async register(
+    request: RegisterRequest
+  ): Promise<[user: User, authToken: AuthToken]> {
+    const response = await this.clientCommunicator.doPost<
+      LoginRequest,
+      AuthenticateResponse
+    >(request, "/register");
+
+    const user = response.user ? User.fromDto(response.user) : null;
+    const token = AuthToken.fromDto(response.authToken);
+
+    // Handle errors
+    if (response.success) {
+      if (user == null) {
+        throw new Error(`Unable to login`);
+      } else {
+        return [user, token];
+      }
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async logOut(request: TweeterRequest): Promise<void> {
+    const response = await this.clientCommunicator.doPost<
+      TweeterRequest,
+      TweeterResponse
+    >(request, "/logout");
 
     if(response.success){
       return

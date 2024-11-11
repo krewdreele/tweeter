@@ -6,7 +6,11 @@ export class LoginPresenter extends AuthenticationPresenter {
     alias: string,
     password: string
   ): Promise<[User, AuthToken]> {
-    return this.service.login(alias, password);
+    return this.service.login({
+      alias: alias, 
+      password: password,
+      token: ""
+    });
   }
 
   protected getItemDescription(): string {

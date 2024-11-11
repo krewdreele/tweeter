@@ -1,45 +1,28 @@
-import { User, AuthToken, FakeData } from "tweeter-shared";
-import { Buffer } from "buffer";
+import { User, AuthToken, LoginRequest, TweeterRequest, RegisterRequest } from "tweeter-shared";
+import { ServerFacade } from "../../network/ServerFacade";
 
 export class AuthenticateService {
+  private server = new ServerFacade();
+
   public async login(
-    alias: string,
-    password: string
+    request: LoginRequest
   ): Promise<[User, AuthToken]> {
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    
+    const [user, token] = await this.server.login(request);
 
-    if (user === null) {
-      throw new Error("Invalid alias or password");
-    }
-
-    return [user, FakeData.instance.authToken];
+    return [user, token];
   }
 
-  public async logOut(authToken: AuthToken): Promise<void> {
-    // Pause so we can see the logging out message. Delete when the call to the server is implemented.
-    await new Promise((res) => setTimeout(res, 1000));
+  public async logOut(request: TweeterRequest): Promise<void> {
+    await this.server.logOut(request);
   }
 
   public async register(
-    firstName: string,
-    lastName: string,
-    alias: string,
-    password: string,
-    userImageBytes: Uint8Array,
-    imageFileExtension: string
+    request: RegisterRequest
   ): Promise<[User, AuthToken]> {
     // Not neded now, but will be needed when you make the request to the server in milestone 3
-    const imageStringBase64: string =
-      Buffer.from(userImageBytes).toString("base64");
+    const [user, token] = await this.server.register(request);
 
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
-
-    if (user === null) {
-      throw new Error("Invalid registration");
-    }
-
-    return [user, FakeData.instance.authToken];
+    return [user, token];
   }
 }
