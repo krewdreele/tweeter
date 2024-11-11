@@ -1,3 +1,4 @@
+import { StatusDto } from "../dto/StatusDto";
 import { PostSegment, Type } from "./PostSegment";
 import { User } from "./User";
 import { format } from "date-fns";
@@ -221,6 +222,19 @@ export class Status {
   public get formattedDate(): string {
     let date: Date = new Date(this.timestamp);
     return format(date, "MMMM dd, yyyy HH:mm:ss");
+  }
+
+  public get dto(): StatusDto {
+    return {
+      post: this.post,
+      timestamp: this.timestamp,
+      user: this.user.dto, // This line doesn't work!! Not sure why... had to convert manually
+      segments: this.segments.map((semgment) => semgment.dto)
+    }
+  }
+
+  public static fromDto(status: StatusDto | null): Status | null {
+    return status ? new Status(status.post, User.fromDto(status.user)!, status.timestamp) : null;
   }
 
   public set timestamp(value: number) {

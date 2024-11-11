@@ -3,9 +3,10 @@ import {
   FollowResponse,
   IsFollowerRequest,
   IsFollowerResponse,
-  PagedUserItemRequest,
-  PagedUserItemResponse,
-  TweeterResponse,
+  PagedItemRequest,
+  PagedItemResponse,
+  Status,
+  StatusDto,
   User,
   UserAliasRequest,
   UserDto,
@@ -20,12 +21,12 @@ export class ServerFacade {
   private clientCommunicator = new ClientCommunicator(this.SERVER_URL);
 
   public async getMoreUserItems(
-    request: PagedUserItemRequest,
+    request: PagedItemRequest<UserDto>,
     type: string
   ): Promise<[User[], boolean]> {
     const response = await this.clientCommunicator.doPost<
-      PagedUserItemRequest,
-      PagedUserItemResponse
+      PagedItemRequest<UserDto>,
+      PagedItemResponse<UserDto>
     >(request, `/${type}/list`);
 
     // Convert the UserDto array returned by ClientCommunicator to a User array
@@ -127,6 +128,34 @@ export class ServerFacade {
 
     if (response.success) {
       return [response.followerCount, response.followeeCount];
+    } else {
+      console.error(response);
+      throw new Error(response.message ?? "unknown error");
+    }
+  }
+
+  public async getMoreStatusItems(
+    request: PagedItemRequest<StatusDto>,
+    type: string
+  ): Promise<[Status[], boolean]> {
+    const response = await this.clientCommunicator.doPost<
+      PagedItemRequest<StatusDto>,
+      PagedItemResponse<StatusDto>
+    >(request, `/${type}`);
+
+    // Convert the StatusDto array returned by ClientCommunicator to a Status array
+    const items: Status[] | null =
+      response.success && response.items
+        ? response.items.map((dto) => Status.fromDto(dto) as Status)
+        : null;
+
+    // Handle errors
+    if (response.success) {
+      if (items == null) {
+        throw new Error(`No ${type} found`);
+      } else {
+        return [items, response.hasMore];
+      }
     } else {
       console.error(response);
       throw new Error(response.message ?? "unknown error");

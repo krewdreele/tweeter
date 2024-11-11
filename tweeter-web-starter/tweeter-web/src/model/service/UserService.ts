@@ -1,18 +1,18 @@
-import { AuthToken, User, FakeData, TweeterRequest, PagedUserItemRequest, UserAliasRequest, IsFollowerRequest } from "tweeter-shared";
+import { User, PagedItemRequest, UserAliasRequest, IsFollowerRequest, UserDto } from "tweeter-shared";
 import { ServerFacade } from "../../network/ServerFacade";
 
 export class UserService {
   private server = new ServerFacade();
 
   public async loadMoreFollowers(
-    request: PagedUserItemRequest
+    request: PagedItemRequest<UserDto>
   ): Promise<[User[], boolean]> {
     // TODO: Replace with the result of calling server
     return await this.server.getMoreUserItems(request, "follower");
   }
 
   public async loadMoreFollowees(
-    request: PagedUserItemRequest
+    request: PagedItemRequest<UserDto>
   ): Promise<[User[], boolean]> {
     return await this.server.getMoreUserItems(request, "followee");
   }

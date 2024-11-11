@@ -1,4 +1,4 @@
-import { PagedUserItemResponse, TweeterRequest, TweeterResponse } from "tweeter-shared";
+import { TweeterRequest, TweeterResponse } from "tweeter-shared";
 
 export class ClientCommunicator {
   private SERVER_URL: string;
