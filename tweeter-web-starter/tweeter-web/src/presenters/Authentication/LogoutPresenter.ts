@@ -23,7 +23,7 @@ export class LogoutPresenter extends Presenter<LogoutView> {
     this.view.displayInfoMessage("Logging Out...", 0);
 
     this.doFailureReportingOperation(async () => {
-      await this.service.logOut({token: authToken!.token});
+      await this.service.logOut({token: authToken.token});
 
       this.view.clearLastInfoMessage();
       this.view.clearUserInfo();

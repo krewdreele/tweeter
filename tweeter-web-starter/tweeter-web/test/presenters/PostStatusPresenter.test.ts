@@ -40,11 +40,12 @@ describe("PostStatusPresenter", () => {
   it("calls post status service with correct authentication token and string", async () => {
     await mockPresenter.submitPost(authToken, post, currentUser);
 
-    let [capturedToken, capturedStatus] = capture(
+    let request = capture(
       mockService.postStatus
-    ).last();
-    expect(capturedToken).toEqual(authToken);
-    expect(capturedStatus.post).toBe(post);
+    ).first();
+
+    expect(request[0].token).toEqual(authToken.token);
+    expect(request[0].newStatus.post).toBe(post);
   });
 
   it("tells the view to clear the last info message, clear the post and display the status posted message when successful", async () => {
@@ -58,7 +59,7 @@ describe("PostStatusPresenter", () => {
 
   it("tells the view to display an error message and clear the last info message when failure", async () => {
     const error = new Error("test error");
-    when(mockService.postStatus(anything(), anything())).thenThrow(error);
+    when(mockService.postStatus(anything())).thenThrow(error);
 
     await mockPresenter.submitPost(authToken, post, currentUser);
 

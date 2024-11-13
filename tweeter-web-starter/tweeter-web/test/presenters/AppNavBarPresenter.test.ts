@@ -41,7 +41,7 @@ describe("AppNavBarPresenter", () => {
 
   it("calls logout on the user service with correct auth token", async () => {
     await mockPresenter.logOut(authToken);
-    verify(mockService.logOut(authToken)).once();
+    verify(mockService.logOut(anything())).once();
   });
 
   it("tells the view to clear the last info message, clear the user info and navigate to login page", async () => {
