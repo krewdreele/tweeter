@@ -3,7 +3,7 @@ import { StatusService } from "../../model/service/StatusService";
 
 export const handler = async (request: PagedItemRequest<StatusDto>): Promise<PagedItemResponse<StatusDto>> => {
     const service = new StatusService();
-    const [items, hasMore] = await service.loadMoreFeedItems(request.token, request.pageSize, request.lastItem);
+    const [items, hasMore] = await service.loadMoreFeedItems(request.userAlias, request.token, request.pageSize, request.lastItem);
 
     return {
         success: true,

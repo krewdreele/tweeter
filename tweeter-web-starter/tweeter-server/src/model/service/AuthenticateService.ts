@@ -1,22 +1,23 @@
 import { AuthTokenDto, FakeData, UserDto } from "tweeter-shared";
+import { Service } from "./Service";
 
-export class AuthenticateService {
+export class AuthenticateService extends Service {
   public async login(
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
-    // TODO: Replace with the result of calling the db
-    const user = FakeData.instance.firstUser;
+    
+    const response = await this.DaoFactory.getAuthDao().getUser(alias, password);
 
-    if (user === null) {
+    if (response === null) {
       throw new Error("Invalid alias or password");
     }
 
-    return [user.dto, FakeData.instance.authToken.dto];
+    return response;
   }
 
   public async logOut(token: string): Promise<void> {
-    return
+    await this.DaoFactory.getAuthDao().logOut(token);
   }
 
   public async register(
@@ -28,13 +29,19 @@ export class AuthenticateService {
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
 
-    // TODO: Replace with the result of calling the server
-    const user = FakeData.instance.firstUser;
+    const userDto: UserDto = {
+      firstName: firstName,
+      lastName: lastName,
+      alias: alias,
+      imageUrl: imageFileExtension
+    }
 
-    if (user === null) {
+    const response = await this.DaoFactory.getAuthDao().register(userDto, password);
+
+    if (response === null) {
       throw new Error("Invalid registration");
     }
 
-    return [user.dto, FakeData.instance.authToken.dto];
+    return response;
   }
 }

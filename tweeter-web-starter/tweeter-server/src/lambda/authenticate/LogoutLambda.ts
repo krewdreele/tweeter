@@ -5,7 +5,16 @@ export const handler = async (
   request: TweeterRequest
 ): Promise<TweeterResponse> => {
   const service = new AuthenticateService();
-  await service.logOut(request.token);
+
+  try {
+    await service.logOut(request.token);
+  }
+  catch(error: any) {
+    return {
+      success: false,
+      message: error?.message
+    }
+  }
 
   return {
     success: true,

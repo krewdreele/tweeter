@@ -192,11 +192,11 @@ export class ServerFacade {
     >(request, "/login");
 
     const user = response.user ? User.fromDto(response.user) : null;
-    const token = AuthToken.fromDto(response.authToken);
+    const token = response.authToken ? AuthToken.fromDto(response.authToken) : null;
 
     // Handle errors
     if (response.success) {
-      if (user == null) {
+      if (user == null || token == null) {
         throw new Error(`Unable to login`);
       } else {
         return [user, token];
@@ -216,11 +216,11 @@ export class ServerFacade {
     >(request, "/register");
 
     const user = response.user ? User.fromDto(response.user) : null;
-    const token = AuthToken.fromDto(response.authToken);
+    const token = response.authToken ? AuthToken.fromDto(response.authToken) : null;
 
     // Handle errors
     if (response.success) {
-      if (user == null) {
+      if (user == null || token == null) {
         throw new Error(`Unable to login`);
       } else {
         return [user, token];

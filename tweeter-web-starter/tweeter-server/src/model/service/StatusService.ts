@@ -1,36 +1,38 @@
-import { Status, FakeData, StatusDto } from "tweeter-shared";
+import { Status, StatusDto } from "tweeter-shared";
+import { Service } from "./Service";
 
-export class StatusService {
+export class StatusService extends Service {
   public async loadMoreStoryItems(
+    userAlias: string,
     token: string,
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
-    // TODO: Replace with the result of calling db
-    const [items, hasMore] = FakeData.instance.getPageOfStatuses(
-      Status.fromDto(lastItem),
+    const response = await this.DaoFactory.getStatusDao().loadMoreStoryItems(
+      userAlias,
       pageSize,
+      lastItem
     );
-    const dtos = this.convertToDtos(items);
-    return [dtos, hasMore];
+
+    return response;
   }
 
   public async loadMoreFeedItems(
+    userAlias: string,
     token: string,
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
-    // TODO: Replace with the result of calling db
-    const [items, hasMore] = FakeData.instance.getPageOfStatuses(
-      Status.fromDto(lastItem),
-      pageSize
+    const response = await this.DaoFactory.getStatusDao().loadMoreFeedItems(
+      userAlias,
+      pageSize,
+      lastItem
     );
-    const dtos = this.convertToDtos(items);
 
-    return [dtos, hasMore];
+    return response;
   }
 
-  private convertToDtos(items: Status[]){
+  private convertToDtos(items: Status[]) {
     const userDtos = items.map((status) => status.user.dto);
     const dtos = items.map((status) => status.dto);
 
@@ -41,13 +43,7 @@ export class StatusService {
     return dtos;
   }
 
-  public async postStatus(
-    token: string,
-    newStatus: StatusDto
-  ): Promise<void> {
-
-    // TODO: Call the db to post the status
-    const status = Status.fromDto(newStatus);
-    return
+  public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
+    await this.DaoFactory.getStatusDao().postStatus(newStatus);
   }
 }

@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /dist
+
+tweeter-web-starter.zip
+tweeter-web.zip
