@@ -1,3 +1,4 @@
+import bcrypt from "bcryptjs";
 import {
   DynamoDBClient,
   GetItemCommand,
@@ -9,7 +10,7 @@ import { AuthenticateDAO } from "../AuthenticateDAO";
 
 export class DynamoAuthDAO implements AuthenticateDAO {
   private userTableName = "User";
-  private dynamoClient = new DynamoDBClient({ region: "us-west-2" }); 
+  private dynamoClient = new DynamoDBClient({ region: "us-west-2" });
 
   async register(
     user: UserDto,
@@ -17,7 +18,10 @@ export class DynamoAuthDAO implements AuthenticateDAO {
   ): Promise<[UserDto, AuthTokenDto] | null> {
     const { alias, firstName, lastName, imageUrl } = user;
     const authToken = this.generateAuthToken();
-    const timestamp = new Date().toISOString(); // Record creation time
+    const timestamp = new Date().toISOString();
+
+    // Hash the password before storing
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Store user data
     const userParams = {
@@ -27,20 +31,18 @@ export class DynamoAuthDAO implements AuthenticateDAO {
         firstName: { S: firstName },
         lastName: { S: lastName },
         imageUrl: { S: imageUrl },
-        password: { S: password }, // Hash before storing
-        authToken: {
-          M: {
-            token: { S: authToken },
-            timestamp: { S: timestamp },
-          },
-        },
+        password: { S: hashedPassword }, // Store the hashed password
+        authToken: { S: authToken },
+        sessionTimestamp: { S: timestamp },
       },
     };
 
     try {
       await this.dynamoClient.send(new PutItemCommand(userParams));
-
-      return [user, { token: authToken, timestamp: Number(timestamp) }];
+      return [
+        user,
+        { token: authToken, timestamp: Number(new Date(timestamp).getTime()) },
+      ];
     } catch (error) {
       console.error("Error registering user:", error);
       return null;
@@ -59,51 +61,60 @@ export class DynamoAuthDAO implements AuthenticateDAO {
     };
 
     try {
-      // Fetch user data
+      // Step 1: Fetch user data
       const userResult = await this.dynamoClient.send(
         new GetItemCommand(userParams)
       );
-      if (!userResult.Item) {
+      if (!userResult.Item || !userResult.Item.password.S) {
         throw new Error("User not found");
       }
 
-      // Validate password
-      if (userResult.Item.password.S !== password) {
+      const storedHashedPassword = userResult.Item.password.S;
+
+      // Step 2: Validate password
+      const isPasswordValid = await bcrypt.compare(
+        password,
+        storedHashedPassword
+      );
+      if (!isPasswordValid) {
         throw new Error("Invalid password");
       }
 
+      // Step 3: Map user data to UserDto
       const user: UserDto = {
         alias,
         firstName: userResult.Item.firstName.S ?? "unknown",
         lastName: userResult.Item.lastName.S ?? "unknown",
-        imageUrl: userResult.Item.imageUrl.S ?? "unknown",
+        imageUrl: userResult.Item.imageUrl?.S ?? "unknown",
       };
 
-      // Generate a new token
+      // Step 4: Generate new authToken and sessionTimestamp
       const authToken = this.generateAuthToken();
-      const timestamp = new Date().toISOString();
+      const sessionTimestamp = new Date().toISOString();
 
+      // Step 5: Update authToken and sessionTimestamp in the database
       const updateParams = {
         TableName: this.userTableName,
         Key: {
           alias: { S: alias },
         },
-        UpdateExpression: "SET authToken = :authToken",
+        UpdateExpression:
+          "SET authToken = :authToken, sessionTimestamp = :sessionTimestamp",
         ExpressionAttributeValues: {
-          ":authToken": {
-            M: {
-              token: { S: authToken },
-              timestamp: { S: timestamp },
-            },
-          },
+          ":authToken": { S: authToken },
+          ":sessionTimestamp": { S: sessionTimestamp },
         },
       };
 
       await this.dynamoClient.send(new UpdateItemCommand(updateParams));
 
-      return [user, { token: authToken, timestamp: Number(timestamp) }];
+      // Convert back to number
+      const timestamp = new Date(sessionTimestamp).getTime();
+
+      // Step 6: Return user and token data
+      return [user, { token: authToken, timestamp: timestamp }];
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error fetching or updating user:", error);
       throw error;
     }
   }

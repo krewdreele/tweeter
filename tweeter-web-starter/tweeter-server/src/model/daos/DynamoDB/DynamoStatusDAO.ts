@@ -17,19 +17,16 @@ export class DynamoStatusDAO implements StatusDAO {
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
-    
-      let posts: StatusDto[] | null = null;
+    let posts: StatusDto[] | null = null;
 
-      try{
-        posts = await this.getPosts(userAlias);
-      }
-      catch(error){
-        throw(error);
-      }
-
-      return this.paginate(lastItem, posts, pageSize);
+    try {
+      posts = await this.getPosts(userAlias);
+    } catch (error) {
+      throw error;
     }
 
+    return this.paginate(lastItem, posts, pageSize);
+  }
 
   async postStatus(newStatus: StatusDto): Promise<void> {
     const updateParams = {
@@ -89,7 +86,11 @@ export class DynamoStatusDAO implements StatusDAO {
     return this.paginate(lastItem, posts, pageSize);
   }
 
-  paginate = (lastItem: StatusDto | null, posts: StatusDto[], pageSize: number) => {
+  paginate = (
+    lastItem: StatusDto | null,
+    posts: StatusDto[],
+    pageSize: number
+  ) => {
     // Implement pagination
     let startIndex = 0;
     if (lastItem) {
@@ -103,7 +104,7 @@ export class DynamoStatusDAO implements StatusDAO {
     let response: [StatusDto[], boolean] = [paginatedPosts, hasMore];
 
     return response;
-  }
+  };
 
   getPosts = async (userAlias: string) => {
     const getItemParams = {
@@ -140,13 +141,12 @@ export class DynamoStatusDAO implements StatusDAO {
           type: segment.M!.type.S,
         })),
       })) as StatusDto[];
-    }
-      catch (error) {
+    } catch (error) {
       console.error("Error loading story items:", error);
       throw error;
-      }
-      return posts;
-  }
+    }
+    return posts;
+  };
 
   getFollowees = async (followerHandle: string): Promise<string[]> => {
     const queryParams = {
@@ -158,7 +158,9 @@ export class DynamoStatusDAO implements StatusDAO {
     };
 
     try {
-      const result = await this.dynamoClient.send(new QueryCommand(queryParams));
+      const result = await this.dynamoClient.send(
+        new QueryCommand(queryParams)
+      );
       return result.Items?.map((item) => item.followee_handle.S!) || [];
     } catch (error) {
       console.error("Error retrieving followees:", error);

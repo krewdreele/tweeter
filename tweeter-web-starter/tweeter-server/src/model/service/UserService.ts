@@ -58,7 +58,8 @@ export class UserService extends Service {
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
     
-    await this.DaoFactory.getUserDao().follow(userAlias);
+    
+    await this.DaoFactory.getUserDao().follow(token, userAlias);
 
     const followerCount = await this.getFollowerCount(token, userAlias);
     const followeeCount = await this.getFolloweeCount(token, userAlias);
@@ -71,7 +72,7 @@ export class UserService extends Service {
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
     
-    await this.DaoFactory.getUserDao().unfollow(userAlias);
+    await this.DaoFactory.getUserDao().unfollow(token, userAlias);
 
     const followerCount = await this.getFollowerCount(token, userAlias);
     const followeeCount = await this.getFolloweeCount(token, userAlias);

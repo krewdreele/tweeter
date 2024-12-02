@@ -221,7 +221,7 @@ export class ServerFacade {
     // Handle errors
     if (response.success) {
       if (user == null || token == null) {
-        throw new Error(`Unable to login`);
+        throw new Error(`Unable to register`);
       } else {
         return [user, token];
       }

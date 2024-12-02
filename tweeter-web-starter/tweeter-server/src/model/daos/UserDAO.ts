@@ -25,10 +25,12 @@ export interface UserDAO {
   getFollowerCount(userAlias: string): Promise<number>;
 
   follow(
+    token: string,
     userAlias: string
   ): Promise<void>;
 
   unfollow(
+    token: string,
     userAlias: string
   ): Promise<void>;
 }

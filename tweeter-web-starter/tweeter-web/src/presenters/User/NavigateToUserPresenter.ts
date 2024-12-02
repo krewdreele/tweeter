@@ -23,8 +23,8 @@ export class NavigateToUserPresenter extends Presenter<NavigateToUserView> {
     event.preventDefault();
 
     this.doFailureReportingOperation(async () => {
-      const alias = this.view.extractAlias(event.target.toString());
-
+      let alias = this.view.extractAlias(event.target.toString());
+      alias = alias.replace('@', '');
       const user = await this.service.getUser({token: authToken.token, userAlias: alias});
 
       if (!!user) {
