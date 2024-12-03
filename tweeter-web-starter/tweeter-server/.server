@@ -16,4 +16,4 @@ tweeterLogin | lambda/authenticate/LoginLambda.handler
 tweeterRegister | lambda/authenticate/RegisterLambda.handler
 tweeterLogout | lambda/authenticate/LogoutLambda.handler
 '
-LAMBDALAYER_ARN='arn:aws:lambda:us-west-2:148761636150:layer:TweeterServerDependencies:8'
+LAMBDALAYER_ARN='arn:aws:lambda:us-west-2:148761636150:layer:TweeterServerDependencies:10'

@@ -1,4 +1,3 @@
 export interface ImageDAO {
-    upload(image: string): Promise<void>;
-    getImage(userAlias: string): Promise<string>;
+    putImage(fileName: string, imageStringBase64Encoded: string): Promise<string>;
 }

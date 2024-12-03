@@ -3,15 +3,14 @@ import {
   DynamoDBClient,
   GetItemCommand,
   PutItemCommand,
+  QueryCommand,
   UpdateItemCommand,
 } from "@aws-sdk/client-dynamodb";
 import { AuthTokenDto, UserDto } from "tweeter-shared";
 import { AuthenticateDAO } from "../AuthenticateDAO";
+import { DynamoDAO } from "./DynamoDAO";
 
-export class DynamoAuthDAO implements AuthenticateDAO {
-  private userTableName = "User";
-  private dynamoClient = new DynamoDBClient({ region: "us-west-2" });
-
+export class DynamoAuthDAO extends DynamoDAO implements AuthenticateDAO {
   async register(
     user: UserDto,
     password: string
@@ -49,7 +48,7 @@ export class DynamoAuthDAO implements AuthenticateDAO {
     }
   }
 
-  async getUser(
+  async login(
     alias: string,
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
@@ -150,5 +149,28 @@ export class DynamoAuthDAO implements AuthenticateDAO {
     }
 
     return token;
+  }
+
+  async authenticate(token: string) {
+    // Retrieve the authenticated user using the authToken
+    const getUserParams = {
+      TableName: this.userTableName,
+      IndexName: "authToken-index", // Use a GSI for querying by token
+      KeyConditionExpression: "authToken = :token",
+      ExpressionAttributeValues: {
+        ":token": { S: token },
+      },
+      ProjectionExpression: "alias", // Only fetch the alias field
+    };
+    const userResult = await this.dynamoClient.send(
+      new QueryCommand(getUserParams)
+    );
+    if (!userResult.Items || userResult.Items.length === 0) {
+      throw new Error("Invalid or expired auth token");
+    }
+
+    const followerAlias = userResult.Items[0].alias.S; // Extract the alias of the authenticated user
+
+    return followerAlias!;
   }
 }

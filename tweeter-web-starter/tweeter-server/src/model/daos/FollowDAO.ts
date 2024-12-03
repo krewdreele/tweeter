@@ -1,6 +1,6 @@
 import { UserDto } from "tweeter-shared";
 
-export interface UserDAO {
+export interface FollowDAO {
   loadMoreFollowers(
     userAlias: string,
     pageSize: number,
@@ -25,12 +25,12 @@ export interface UserDAO {
   getFollowerCount(userAlias: string): Promise<number>;
 
   follow(
-    token: string,
-    userAlias: string
+    followerAlias: string,
+    followeeAlias: string
   ): Promise<void>;
 
   unfollow(
-    token: string,
-    userAlias: string
+    followerAlias: string,
+    followeeAlias: string
   ): Promise<void>;
 }

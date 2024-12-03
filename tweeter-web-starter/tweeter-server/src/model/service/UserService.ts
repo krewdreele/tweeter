@@ -9,8 +9,12 @@ export class UserService extends Service {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    
-    return this.DaoFactory.getUserDao().loadMoreFollowers(userAlias, pageSize, lastItem);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+    return this.DaoFactory.getFollowDao().loadMoreFollowers(userAlias, pageSize, lastItem);
   }
 
   public async loadMoreFollowees(
@@ -19,7 +23,12 @@ export class UserService extends Service {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
-    return this.DaoFactory.getUserDao().loadMoreFollowees(
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+    return this.DaoFactory.getFollowDao().loadMoreFollowees(
       userAlias,
       pageSize,
       lastItem
@@ -28,7 +37,13 @@ export class UserService extends Service {
 
 
   public async getUser(token: string, alias: string): Promise<UserDto | null> {
-    return this.DaoFactory.getUserDao().getUser(alias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if(!user){
+      throw new Error("Unauthenticated");
+    }
+
+    return this.DaoFactory.getFollowDao().getUser(alias);
   }
 
   public async getIsFollowerStatus(
@@ -36,21 +51,38 @@ export class UserService extends Service {
     userAlias: string,
     selectedUserAlias: string
   ): Promise<boolean> {
-    return this.DaoFactory.getUserDao().getIsFollowerStatus(userAlias, selectedUserAlias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
+    return this.DaoFactory.getFollowDao().getIsFollowerStatus(userAlias, selectedUserAlias);
   }
 
   public async getFolloweeCount(
     token: string,
     userAlias: string
   ): Promise<number> {
-    return this.DaoFactory.getUserDao().getFolloweeCount(userAlias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
+    return this.DaoFactory.getFollowDao().getFolloweeCount(userAlias);
   }
 
   public async getFollowerCount(
     token: string,
     userAlias: string
   ): Promise<number> {
-    return this.DaoFactory.getUserDao().getFollowerCount(userAlias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+    return this.DaoFactory.getFollowDao().getFollowerCount(userAlias);
   }
 
   public async follow(
@@ -58,8 +90,13 @@ export class UserService extends Service {
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
     
-    
-    await this.DaoFactory.getUserDao().follow(token, userAlias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
+    await this.DaoFactory.getFollowDao().follow(user, userAlias);
 
     const followerCount = await this.getFollowerCount(token, userAlias);
     const followeeCount = await this.getFolloweeCount(token, userAlias);
@@ -72,7 +109,13 @@ export class UserService extends Service {
     userAlias: string
   ): Promise<[followerCount: number, followeeCount: number]> {
     
-    await this.DaoFactory.getUserDao().unfollow(token, userAlias);
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
+    await this.DaoFactory.getFollowDao().unfollow(user, userAlias);
 
     const followerCount = await this.getFollowerCount(token, userAlias);
     const followeeCount = await this.getFolloweeCount(token, userAlias);

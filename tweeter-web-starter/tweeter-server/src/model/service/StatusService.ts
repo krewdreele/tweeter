@@ -8,6 +8,11 @@ export class StatusService extends Service {
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
     const response = await this.DaoFactory.getStatusDao().loadMoreStoryItems(
       userAlias,
       pageSize,
@@ -23,6 +28,13 @@ export class StatusService extends Service {
     pageSize: number,
     lastItem: StatusDto | null
   ): Promise<[StatusDto[], boolean]> {
+
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
+
     const response = await this.DaoFactory.getStatusDao().loadMoreFeedItems(
       userAlias,
       pageSize,
@@ -32,18 +44,12 @@ export class StatusService extends Service {
     return response;
   }
 
-  private convertToDtos(items: Status[]) {
-    const userDtos = items.map((status) => status.user.dto);
-    const dtos = items.map((status) => status.dto);
-
-    dtos.forEach((status, index) => {
-      status.user = userDtos[index];
-    });
-
-    return dtos;
-  }
-
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {
+    const user = await this.DaoFactory.getAuthDao().authenticate(token);
+
+    if (!user) {
+      throw new Error("Unauthenticated");
+    }
     await this.DaoFactory.getStatusDao().postStatus(newStatus);
   }
 }

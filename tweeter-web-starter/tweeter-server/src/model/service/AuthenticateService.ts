@@ -7,7 +7,7 @@ export class AuthenticateService extends Service {
     password: string
   ): Promise<[UserDto, AuthTokenDto]> {
     
-    const response = await this.DaoFactory.getAuthDao().getUser(alias, password);
+    const response = await this.DaoFactory.getAuthDao().login(alias, password);
 
     if (response === null) {
       throw new Error("Invalid alias or password");
@@ -29,11 +29,13 @@ export class AuthenticateService extends Service {
     imageFileExtension: string
   ): Promise<[UserDto, AuthTokenDto]> {
 
+    const url = await this.DaoFactory.getImageDao().putImage(alias, userImageBase64);
+
     const userDto: UserDto = {
       firstName: firstName,
       lastName: lastName,
       alias: alias,
-      imageUrl: imageFileExtension
+      imageUrl: url
     }
 
     const response = await this.DaoFactory.getAuthDao().register(userDto, password);

@@ -229,7 +229,6 @@ export class Status {
       post: this.post,
       timestamp: this.timestamp,
       user: this.user.dto, // This line doesn't work!! Not sure why... had to convert manually
-      segments: this.segments.map((semgment) => semgment.dto)
     }
   }
 

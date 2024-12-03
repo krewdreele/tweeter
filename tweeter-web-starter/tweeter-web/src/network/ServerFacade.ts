@@ -211,7 +211,7 @@ export class ServerFacade {
     request: RegisterRequest
   ): Promise<[user: User, authToken: AuthToken]> {
     const response = await this.clientCommunicator.doPost<
-      LoginRequest,
+      RegisterRequest,
       AuthenticateResponse
     >(request, "/register");
 
