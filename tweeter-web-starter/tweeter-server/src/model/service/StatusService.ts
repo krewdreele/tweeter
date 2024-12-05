@@ -13,13 +13,15 @@ export class StatusService extends Service {
     if (!user) {
       throw new Error("Unauthenticated");
     }
-    const response = await this.DaoFactory.getStatusDao().loadMoreStoryItems(
+    const [statuses, hasMore] = await this.DaoFactory.getStatusDao().loadMoreStoryItems(
       userAlias,
       pageSize,
       lastItem
     );
 
-    return response;
+    const returnedStatuses = this.returnStatusesWithAtSymbol(statuses);
+
+    return [returnedStatuses, hasMore];
   }
 
   public async loadMoreFeedItems(
@@ -35,13 +37,16 @@ export class StatusService extends Service {
       throw new Error("Unauthenticated");
     }
 
-    const response = await this.DaoFactory.getStatusDao().loadMoreFeedItems(
-      userAlias,
-      pageSize,
-      lastItem
-    );
+    const [statuses, hasMore] =
+      await this.DaoFactory.getStatusDao().loadMoreFeedItems(
+        userAlias,
+        pageSize,
+        lastItem
+      );
 
-    return response;
+    const returnedStatuses = this.returnStatusesWithAtSymbol(statuses);
+
+    return [returnedStatuses, hasMore];
   }
 
   public async postStatus(token: string, newStatus: StatusDto): Promise<void> {

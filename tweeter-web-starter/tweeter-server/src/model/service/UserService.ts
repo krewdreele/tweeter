@@ -14,7 +14,12 @@ export class UserService extends Service {
     if (!user) {
       throw new Error("Unauthenticated");
     }
-    return this.DaoFactory.getFollowDao().loadMoreFollowers(userAlias, pageSize, lastItem);
+
+    const [users, hasMore] = await this.DaoFactory.getFollowDao().loadMoreFollowers(userAlias, pageSize, lastItem);
+
+     const returnedUsers = this.returnUsersWithAtSymbol(users);
+
+     return [returnedUsers, hasMore];
   }
 
   public async loadMoreFollowees(
@@ -28,11 +33,15 @@ export class UserService extends Service {
     if (!user) {
       throw new Error("Unauthenticated");
     }
-    return this.DaoFactory.getFollowDao().loadMoreFollowees(
+    const [users, hasMore] = await this.DaoFactory.getFollowDao().loadMoreFollowees(
       userAlias,
       pageSize,
       lastItem
     );
+
+    const returnedUsers = this.returnUsersWithAtSymbol(users);
+
+    return [returnedUsers, hasMore];
   }
 
 
