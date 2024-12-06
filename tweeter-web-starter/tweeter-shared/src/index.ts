@@ -16,6 +16,8 @@ export { AuthToken } from "./model/domain/AuthToken";
 export type { UserDto } from "./model/dto/UserDto";
 export type { StatusDto } from "./model/dto/StatusDto";
 export type { AuthTokenDto } from "./model/dto/AuthTokenDto";
+export type { StatusQueueDto } from "./model/dto/StatusQueueDto";
+export type { FeedQueueDto } from "./model/dto/FeedQueueDto";
 
 //
 // Requests

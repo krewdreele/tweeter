@@ -10,6 +10,8 @@ import {
 import { DynamoDAO } from "./DynamoDAO";
 
 export class DynamoFollowDAO extends DynamoDAO implements FollowDAO {
+  protected followTableName = "follows";
+  protected followIndexName = "follows-index";
 
   async getFolloweeCount(userAlias: string): Promise<number> {
     const queryParams = {
@@ -67,22 +69,7 @@ export class DynamoFollowDAO extends DynamoDAO implements FollowDAO {
       // Insert follow relationship
       await this.dynamoClient.send(new PutItemCommand(putFollowParams));
 
-      // Step 2: Retrieve recent statuses from Status table
-      const [recentStatuses] = await this.loadMorePosts(
-        followeeAlias,
-        10,
-        null,
-        "Status"
-      );
-
-      // Step 3: Add statuses to Feed table for the follower
-      if (recentStatuses.length > 0) {
-        await this.populateFeed(followerAlias!, recentStatuses);
-      }
-
-      console.log(
-        `${followerAlias} is now following ${followeeAlias} and their feed is updated.`
-      );
+      console.log(`${followerAlias} is now following ${followeeAlias}.`);
     } catch (error) {
       console.error(`Error following user ${followeeAlias}:`, error);
       throw error;
@@ -112,6 +99,25 @@ export class DynamoFollowDAO extends DynamoDAO implements FollowDAO {
     pageSize: number,
     lastItem: UserDto | null
   ): Promise<[UserDto[], boolean]> {
+    const { aliases, hasMore } = await this.loadFollowersAliases(
+      userAlias,
+      pageSize,
+      lastItem?.alias ?? null
+    );
+    // Fetch full UserDto for each alias
+    const dtos = await Promise.all(aliases.map((alias) => this.getUser(alias)));
+
+    // Filter out null results
+    const nonNullDtos = dtos.filter((user) => user !== null) as UserDto[];
+
+    return [nonNullDtos, hasMore];
+  }
+
+  async loadFollowersAliases(
+    userAlias: string,
+    pageSize: number,
+    lastItemAlias: string | null
+  ) {
     const queryParams = {
       TableName: this.followTableName,
       IndexName: this.followIndexName, // Use an index for querying by followee_handle
@@ -120,10 +126,10 @@ export class DynamoFollowDAO extends DynamoDAO implements FollowDAO {
         ":userAlias": { S: userAlias },
       },
       Limit: pageSize,
-      ExclusiveStartKey: lastItem
+      ExclusiveStartKey: lastItemAlias
         ? {
             followee_handle: { S: userAlias },
-            follower_handle: { S: lastItem.alias }, // Correct ExclusiveStartKey
+            follower_handle: { S: lastItemAlias },
           }
         : undefined,
     };
@@ -132,22 +138,11 @@ export class DynamoFollowDAO extends DynamoDAO implements FollowDAO {
       const result = await this.dynamoClient.send(
         new QueryCommand(queryParams)
       );
-
       // Extract follower aliases (partition key is follower_handle)
-      const aliases =
-        result.Items?.map((item) => item.follower_handle.S!) || [];
-
-      // Fetch full UserDto for each alias
-      const dtos = await Promise.all(
-        aliases.map((alias) => this.getUser(alias))
-      );
-
-      // Filter out null results
-      const nonNullDtos = dtos.filter((user) => user !== null) as UserDto[];
-
-      const hasMore = !!result.LastEvaluatedKey;
-
-      return [nonNullDtos, hasMore];
+      return {
+        aliases: result.Items?.map((item) => item.follower_handle.S!) || [],
+        hasMore: !!result.LastEvaluatedKey,
+      };
     } catch (error) {
       console.error(`Error loading followers:`, error);
       throw error;
