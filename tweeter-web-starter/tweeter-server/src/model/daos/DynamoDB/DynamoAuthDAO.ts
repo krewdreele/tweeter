@@ -33,6 +33,8 @@ export class DynamoAuthDAO extends DynamoDAO implements AuthenticateDAO {
         password: { S: hashedPassword }, // Store the hashed password
         authToken: { S: authToken },
         sessionTimestamp: { S: timestamp },
+        followerCount: {N: "0"},
+        followeeCount: {N: "0"}
       },
     };
 
